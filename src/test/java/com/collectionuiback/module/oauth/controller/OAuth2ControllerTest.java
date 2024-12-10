@@ -9,8 +9,6 @@ import com.collectionuiback.module.oauth.client.OAuth2AccessTokenProvider;
 import com.collectionuiback.module.oauth.client.OAuth2UserInfoProvider;
 import com.collectionuiback.module.oauth.controller.dto.RequestLoginByCode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.hamcrest.BaseMatcher;
-import org.hamcrest.Description;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -27,9 +25,6 @@ import org.springframework.security.oauth2.core.OAuth2AccessToken;
 import org.springframework.security.oauth2.core.endpoint.OAuth2AccessTokenResponse;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.util.MultiValueMap;
-import org.springframework.web.util.UriComponents;
-import org.springframework.web.util.UriComponentsBuilder;
 
 import java.util.Map;
 import java.util.Optional;
@@ -82,56 +77,9 @@ class OAuth2ControllerTest {
         mockMvc.perform(get("/oauth2/{registrationId}/authorization-uri", "registrationId"))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-                .andExpect(jsonPath("$.code").value(200))
+                .andExpect(jsonPath("$.statusCode").value(200))
                 .andExpect(jsonPath("$.data.authorizationUri").exists())
-                .andExpect(jsonPath("$.data.authorizationUri").value(authorizationUriMatcher()));
-    }
-
-    private BaseMatcher<String> authorizationUriMatcher() {
-        return new BaseMatcher<>() {
-            @Override
-            public boolean matches(Object o) {
-                if (!(o instanceof String)) {
-                    return false;
-                }
-                UriComponents uriComponents = UriComponentsBuilder.fromHttpUrl((String) o).build();
-
-                String path = uriComponents.getPath();
-                String host = uriComponents.getHost();
-                String scheme = uriComponents.getScheme();
-                MultiValueMap<String, String> queryParams = uriComponents.getQueryParams();
-                String clientId = queryParams.getFirst("client_id");
-                String redirectUri = queryParams.getFirst("redirect_uri");
-                String scope = queryParams.getFirst("scope");
-                String state = queryParams.getFirst("state");
-                String responseType = queryParams.getFirst("response_type");
-
-                if (!"/url".equals(path)) return false;
-                if (!"authorization.com".equals(host)) return false;
-                if (!"https".equals(scheme)) return false;
-                if (!"clientId".equals(clientId)) return false;
-                if (!"https://redirect.com/url".equals(redirectUri)) return false;
-                if (scope == null || !scope.contains("email")) return false;
-                if (!scope.contains("profile")) return false;
-                if (!"stringKey".equals(state)) return false;
-                if (!"code".equals(responseType)) return false;
-
-                return true;
-            }
-
-            @Override
-            public void describeTo(Description description) {
-                ClientRegistration clientRegistration = ClientRegistrationFactory.createClientRegistration("registrationId");
-                description.appendText("AuthorizationUri is ")
-                        .appendValue(clientRegistration.getProviderDetails().getAuthorizationUri())
-                        .appendText(" and query params: ")
-                        .appendText(" clientId: " + clientRegistration.getClientId())
-                        .appendText(" redirectUri: " + clientRegistration.getRedirectUri())
-                        .appendText(" scopes: " + clientRegistration.getScopes())
-                        .appendText(" responseType: " + clientRegistration.getAuthorizationGrantType().getValue())
-                        .appendText(" state: stringKey");
-            }
-        };
+                .andExpect(jsonPath("$.data.authorizationUri").value(new AuthorizationUriMatcher()));
     }
 
     @DisplayName("지원하지 않는 RegistrationId 로 요청이 오면 BadRequest 를 반환한다.")
@@ -140,7 +88,7 @@ class OAuth2ControllerTest {
         mockMvc.perform(get("/oauth2/{registrationId}/authorization-uri", "unsupportedRegistrationId"))
                 .andExpect(status().isBadRequest())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-                .andExpect(jsonPath("$.code").value(400))
+                .andExpect(jsonPath("$.statusCode").value(400))
                 .andExpect(jsonPath("$.message").value("Client registration not found: unsupportedRegistrationId"))
                 .andExpect(jsonPath("$.data").isEmpty());
     }
@@ -154,7 +102,7 @@ class OAuth2ControllerTest {
         mockMvc.perform(get("/oauth2/{registrationId}/authorization-uri", "registrationId"))
                 .andExpect(status().isInternalServerError())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-                .andExpect(jsonPath("$.code").value(500))
+                .andExpect(jsonPath("$.statusCode").value(500))
                 .andExpect(jsonPath("$.message").value("Unsupported grant type: client_credentials"))
                 .andExpect(jsonPath("$.data").isEmpty());
     }
@@ -183,7 +131,7 @@ class OAuth2ControllerTest {
                         .content(requestJson))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-                .andExpect(jsonPath("$.code").value(200))
+                .andExpect(jsonPath("$.statusCode").value(200))
                 .andExpect(jsonPath("$.data").exists())
                 .andExpect(jsonPath("$.data.email").value("email@email.com"))
                 .andExpect(jsonPath("$.data.picture").value("pictureValue"))
@@ -215,7 +163,7 @@ class OAuth2ControllerTest {
                         .content(requestJson))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-                .andExpect(jsonPath("$.code").value(200))
+                .andExpect(jsonPath("$.statusCode").value(200))
                 .andExpect(jsonPath("$.data").exists())
                 .andExpect(jsonPath("$.data.email").value("email@email.com"))
                 .andExpect(jsonPath("$.data.picture").value("pictureValue"))
@@ -265,7 +213,7 @@ class OAuth2ControllerTest {
                         .content(requestJson))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-                .andExpect(jsonPath("$.code").value(200))
+                .andExpect(jsonPath("$.statusCode").value(200))
                 .andExpect(jsonPath("$.data").exists())
                 .andExpect(jsonPath("$.data.email").value("email@email.com"))
                 .andExpect(jsonPath("$.data.picture").value("diffPicture"))
@@ -294,7 +242,7 @@ class OAuth2ControllerTest {
                         .content(requestJson))
                 .andExpect(status().isBadRequest())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-                .andExpect(jsonPath("$.code").value(400))
+                .andExpect(jsonPath("$.statusCode").value(400))
                 .andExpect(jsonPath("$.message").value("Client registration not found: unsupportedRegistrationId"))
                 .andExpect(jsonPath("$.data").isEmpty());
     }

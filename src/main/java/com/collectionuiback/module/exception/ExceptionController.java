@@ -25,7 +25,7 @@ public class ExceptionController {
 
         log.error("Occurred ServiceException: {}", e.getMessage(), e);
         return ResponseEntity
-                .status(errorResponseForm.getCode())
+                .status(errorResponseForm.getStatusCode())
                 .body(errorResponseForm);
     }
 }

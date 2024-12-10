@@ -8,7 +8,6 @@ import com.collectionuiback.module.oauth.controller.dto.ResponseAuthorizationUri
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -20,10 +19,10 @@ public class OAuth2Controller {
     private final OAuth2Service oAuth2Service;
 
     @GetMapping("/{registrationId}/authorization-uri")
-    public ResponseEntity<ResponseForm> authorizationUri(@PathVariable("registrationId") String registrationId) {
+    public ResponseEntity<ResponseForm<ResponseAuthorizationUri>> authorizationUri(@PathVariable("registrationId") String registrationId) {
         String authorizationUrl = oAuth2Service.getAuthorizationUrl(registrationId);
 
-        ResponseForm responseForm = ResponseForm.success(ResponseAuthorizationUri.builder()
+        ResponseForm<ResponseAuthorizationUri> responseForm = ResponseForm.success(ResponseAuthorizationUri.builder()
                 .authorizationUri(authorizationUrl)
                 .build());
 
@@ -31,14 +30,14 @@ public class OAuth2Controller {
     }
 
     @PostMapping("/{registrationId}/login")
-    public ResponseEntity<ResponseForm> login(
+    public ResponseEntity<ResponseForm<ResponseUserInfo>> login(
             @PathVariable("registrationId") String registrationId,
             @RequestBody RequestLoginByCode requestLoginByCode,
             HttpServletRequest request,
             HttpServletResponse response) {
         ResponseUserInfo responseUserInfo = oAuth2Service.loginByCode(registrationId, requestLoginByCode.getCode(), request, response);
 
-        ResponseForm responseForm = ResponseForm.success(responseUserInfo);
+        ResponseForm<ResponseUserInfo> responseForm = ResponseForm.success(responseUserInfo);
 
         return ResponseEntity.ok(responseForm);
     }

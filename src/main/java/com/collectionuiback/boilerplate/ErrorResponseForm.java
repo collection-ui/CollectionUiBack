@@ -6,20 +6,20 @@ import org.springframework.http.HttpStatus;
 
 @Getter
 public class ErrorResponseForm {
-    private final int code;
+    private final int statusCode;
     private final Object data;
     private final String message;
 
     @Builder
-    public ErrorResponseForm(int code, Object data, String message) {
-        this.code = code;
+    public ErrorResponseForm(int statusCode, Object data, String message) {
+        this.statusCode = statusCode;
         this.data = data;
         this.message = message;
     }
 
     public static ErrorResponseForm clientError(Object data, String message) {
         return ErrorResponseForm.builder()
-                .code(HttpStatus.BAD_REQUEST.value())
+                .statusCode(HttpStatus.BAD_REQUEST.value())
                 .data(data)
                 .message(message)
                 .build();
@@ -27,7 +27,7 @@ public class ErrorResponseForm {
 
     public static ErrorResponseForm serverError(Object data, String message) {
         return ErrorResponseForm.builder()
-                .code(HttpStatus.INTERNAL_SERVER_ERROR.value())
+                .statusCode(HttpStatus.INTERNAL_SERVER_ERROR.value())
                 .data(data)
                 .message(message)
                 .build();
