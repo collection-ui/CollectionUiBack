@@ -31,6 +31,15 @@ public class SecurityConfig {
     }
 
     @Bean
+    public WebSecurityCustomizer webSecurityCustomizer() {
+        return web -> web.ignoring()
+                .requestMatchers(PathRequest.toH2Console())
+                .requestMatchers("/swagger/*")
+                .requestMatchers("/docs/*")
+                .requestMatchers(PathRequest.toStaticResources().atCommonLocations());
+    }
+
+    @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
                 .authorizeHttpRequests(authorizationManagerRequestMatcherRegistry -> authorizationManagerRequestMatcherRegistry

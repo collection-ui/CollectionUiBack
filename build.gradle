@@ -3,6 +3,7 @@ plugins {
     id 'org.springframework.boot' version '3.3.5'
     id 'io.spring.dependency-management' version '1.1.6'
     id 'org.asciidoctor.jvm.convert' version '3.3.2'
+    id 'com.epages.restdocs-api-spec' version '0.19.4'
 }
 
 group = 'com'
@@ -18,6 +19,7 @@ configurations {
     compileOnly {
         extendsFrom annotationProcessor
     }
+    asciidoctorExt
 }
 
 repositories {
@@ -34,6 +36,8 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-security'
     implementation 'org.springframework.boot:spring-boot-starter-web'
     implementation 'org.springframework.session:spring-session-core'
+    asciidoctorExt 'org.springframework.restdocs:spring-restdocs-asciidoctor'
+    implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.6.0'
     compileOnly 'org.projectlombok:lombok'
     runtimeOnly 'com.h2database:h2'
     annotationProcessor 'org.projectlombok:lombok'
@@ -42,6 +46,7 @@ dependencies {
     testImplementation 'org.springframework.security:spring-security-test'
     testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
     testImplementation 'org.projectlombok:lombok'
+    testImplementation 'com.epages:restdocs-api-spec-mockmvc:0.19.4'
 }
 
 tasks.named('test') {
@@ -51,5 +56,36 @@ tasks.named('test') {
 
 tasks.named('asciidoctor') {
     inputs.dir snippetsDir
+    configurations 'asciidoctorExt'
     dependsOn test
+}
+
+tasks.register('copyApiDocument', Copy) {
+    dependsOn asciidoctor
+    doFirst {
+        delete file("src/main/resources/static/docs")
+    }
+    from asciidoctor.outputDir
+    into file("src/main/resources/static/docs")
+}
+
+openapi3 {
+    server = 'https://localhost:8080'
+    title = 'CollectionUI'
+    description = 'CollectionUI API'
+    version = '0.0.1'
+    format = 'yaml'
+}
+
+tasks.register('copyOasToSwagger', Copy) {
+    dependsOn 'openapi3'
+    doFirst {
+        delete file("src/main/resources/static/swagger/openapi3.yaml")
+    }
+    from project.layout.buildDirectory.file('api-spec/openapi3.yaml')
+    into file("src/main/resources/static/swagger")
+}
+
+build {
+    dependsOn copyApiDocument, copyOasToSwagger
 }

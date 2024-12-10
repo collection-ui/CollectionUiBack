@@ -1,0 +1,31 @@
+= GetAuthorizationUri
+:toc:
+:source-highlighter: highlightjs
+:sectlinks:
+
+== 로그인 Uri 요청
+=== 요청
+include::{snippets}/GetAuthorizationUri/http-request.adoc[]
+include::{snippets}/GetAuthorizationUri/path-parameters.adoc[]
+
+=== 응답
+include::{snippets}/GetAuthorizationUri/http-response.adoc[]
+include::{snippets}/GetAuthorizationUri/response-fields.adoc[]
+
+== 지원하지 않는 OAuth2 Platform
+=== 요청
+include::{snippets}/GetAuthorizationUri-WrongRegistrationId/http-request.adoc[]
+include::{snippets}/GetAuthorizationUri-WrongRegistrationId/path-parameters.adoc[]
+
+=== 응답
+include::{snippets}/GetAuthorizationUri-WrongRegistrationId/http-response.adoc[]
+include::{snippets}/GetAuthorizationUri-WrongRegistrationId/response-fields.adoc[]
+
+== 지원하지 않는 로그인 타입
+=== 요청
+include::{snippets}/GetAuthorizationUri-UnsupportedGrantType/http-request.adoc[]
+include::{snippets}/GetAuthorizationUri-UnsupportedGrantType/path-parameters.adoc[]
+
+=== 응답
+include::{snippets}/GetAuthorizationUri-UnsupportedGrantType/http-response.adoc[]
+include::{snippets}/GetAuthorizationUri-UnsupportedGrantType/response-fields.adoc[]

@@ -1,0 +1,34 @@
+= OAuth2Login
+:toc:
+:source-highlighter: highlightjs
+:sectlinks:
+
+== 로그인 Uri 요청
+=== 요청
+include::{snippets}/OAuth2Login/http-request.adoc[]
+include::{snippets}/OAuth2Login/path-parameters.adoc[]
+include::{snippets}/OAuth2Login/request-fields.adoc[]
+
+=== 응답
+include::{snippets}/OAuth2Login/http-response.adoc[]
+include::{snippets}/OAuth2Login/response-fields.adoc[]
+
+== 지원하지 않는 OAuth2 Platform
+=== 요청
+include::{snippets}/OAuth2Login-WrongRegistrationId/http-request.adoc[]
+include::{snippets}/OAuth2Login-WrongRegistrationId/path-parameters.adoc[]
+include::{snippets}/OAuth2Login-WrongRegistrationId/request-fields.adoc[]
+
+=== 응답
+include::{snippets}/OAuth2Login-WrongRegistrationId/http-response.adoc[]
+include::{snippets}/OAuth2Login-WrongRegistrationId/response-fields.adoc[]
+
+== 잘못된 Code 값
+=== 요청
+include::{snippets}/OAuth2Login-InvalidCode/http-request.adoc[]
+include::{snippets}/OAuth2Login-InvalidCode/path-parameters.adoc[]
+include::{snippets}/OAuth2Login-InvalidCode/request-fields.adoc[]
+
+=== 응답
+include::{snippets}/OAuth2Login-InvalidCode/http-response.adoc[]
+include::{snippets}/OAuth2Login-InvalidCode/response-fields.adoc[]
