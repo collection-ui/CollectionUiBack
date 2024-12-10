@@ -51,7 +51,7 @@ public class RestTemplateResponseClient {
         return resultMapper.apply(responseEntity.getBody());
     }
 
-    private <T, U> ResponseEntity<U> getResponseInternal(RequestEntity<?> requestEntity, Class<U> responseType) {
+    private <T> ResponseEntity<T> getResponseInternal(RequestEntity<?> requestEntity, Class<T> responseType) {
         try {
             return restOperations.exchange(requestEntity, responseType);
         }
@@ -60,7 +60,7 @@ public class RestTemplateResponseClient {
         }
     }
 
-    private <T, U> ResponseEntity<U> getResponseInternal(RequestEntity<?> requestEntity, ParameterizedTypeReference<U> responseType) {
+    private <T> ResponseEntity<T> getResponseInternal(RequestEntity<?> requestEntity, ParameterizedTypeReference<T> responseType) {
         try {
             return restOperations.exchange(requestEntity, responseType);
         }
