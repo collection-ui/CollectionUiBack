@@ -13,7 +13,6 @@ import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.converter.FormHttpMessageConverter;
-import org.springframework.security.oauth2.client.http.OAuth2ErrorResponseErrorHandler;
 import org.springframework.security.oauth2.client.registration.ClientRegistration;
 import org.springframework.security.oauth2.core.OAuth2AccessToken;
 import org.springframework.security.oauth2.core.endpoint.OAuth2AccessTokenResponse;
@@ -30,7 +29,7 @@ import static org.hamcrest.Matchers.notNullValue;
 import static org.springframework.test.web.client.match.MockRestRequestMatchers.*;
 import static org.springframework.test.web.client.response.MockRestResponseCreators.*;
 
-@RestClientTest(RestTemplateResponseClient.class)
+@RestClientTest
 class OAuth2AccessTokenProviderTest {
 
     @Autowired
@@ -113,7 +112,6 @@ class OAuth2AccessTokenProviderTest {
     void notFoundExceptionOnAccessTokenProviderTest() throws JsonProcessingException {
         // given
         RestTemplate restTemplate = new RestTemplate(List.of(new FormHttpMessageConverter(), new OAuth2AccessTokenResponseHttpMessageConverter()));
-        restTemplate.setErrorHandler(new OAuth2ErrorResponseErrorHandler());
         MockRestServiceServer server = MockRestServiceServer.bindTo(restTemplate).build();
 
         RestTemplateResponseClient restTemplateResponseClient = new RestTemplateResponseClient(restTemplate);
@@ -145,7 +143,6 @@ class OAuth2AccessTokenProviderTest {
     void serverErrorOnAccessTokenProviderTest() throws JsonProcessingException {
         // given
         RestTemplate restTemplate = new RestTemplate(List.of(new FormHttpMessageConverter(), new OAuth2AccessTokenResponseHttpMessageConverter()));
-        restTemplate.setErrorHandler(new OAuth2ErrorResponseErrorHandler());
         MockRestServiceServer server = MockRestServiceServer.bindTo(restTemplate).build();
 
         RestTemplateResponseClient restTemplateResponseClient = new RestTemplateResponseClient(restTemplate);
