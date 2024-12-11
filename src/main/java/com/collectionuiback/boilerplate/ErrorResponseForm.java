@@ -32,4 +32,52 @@ public class ErrorResponseForm {
                 .message(message)
                 .build();
     }
+
+    public static ErrorResponseForm unauthorized() {
+        return ErrorResponseForm.builder()
+                .statusCode(HttpStatus.UNAUTHORIZED.value())
+                .message("Unauthorized")
+                .data(null)
+                .build();
+    }
+
+    public static ErrorResponseForm accessDenied() {
+        return ErrorResponseForm.builder()
+                .statusCode(HttpStatus.FORBIDDEN.value())
+                .message("Access denied")
+                .data(null)
+                .build();
+    }
+
+    public static ErrorResponseForm notFound() {
+        return ErrorResponseForm.builder()
+                .statusCode(HttpStatus.NOT_FOUND.value())
+                .message("Not Found")
+                .data(null)
+                .build();
+    }
+
+    public static ErrorResponseForm methodNotAllowed() {
+        return ErrorResponseForm.builder()
+                .statusCode(HttpStatus.METHOD_NOT_ALLOWED.value())
+                .message("Method Not Allowed")
+                .data(null)
+                .build();
+    }
+
+    public static ErrorResponseForm notAcceptable() {
+        return ErrorResponseForm.builder()
+                .statusCode(HttpStatus.NOT_ACCEPTABLE.value())
+                .message("Not Acceptable")
+                .data(null)
+                .build();
+    }
+
+    public static ErrorResponseForm unsupportedMediaType() {
+        return ErrorResponseForm.builder()
+                .statusCode(HttpStatus.UNSUPPORTED_MEDIA_TYPE.value())
+                .message("Unsupported MediaType")
+                .data(null)
+                .build();
+    }
 }
