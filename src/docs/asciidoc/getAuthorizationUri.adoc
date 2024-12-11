@@ -1,5 +1,5 @@
 = GetAuthorizationUri
-:toc:
+:toc: left
 :source-highlighter: highlightjs
 :sectlinks:
 

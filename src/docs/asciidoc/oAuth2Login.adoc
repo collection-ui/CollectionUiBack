@@ -1,5 +1,5 @@
 = OAuth2Login
-:toc:
+:toc: left
 :source-highlighter: highlightjs
 :sectlinks:
 

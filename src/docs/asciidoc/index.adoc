@@ -1,0 +1,10 @@
+= API 명세
+:toc: left
+:source-highlighter: highlightjs
+:sectlinks:
+
+== APIs
+
+=== OAuth2
+* link:getAuthorizationUri.html[getAuthorizationUri, window=blank]
+* link:oAuth2Login.html[OAuth2Login, window=blank]
