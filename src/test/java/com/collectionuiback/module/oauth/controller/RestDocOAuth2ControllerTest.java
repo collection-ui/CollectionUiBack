@@ -19,7 +19,6 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.restdocs.RestDocumentationContextProvider;
 import org.springframework.restdocs.RestDocumentationExtension;
-import org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders;
 import org.springframework.restdocs.request.RequestDocumentation;
 import org.springframework.security.crypto.keygen.StringKeyGenerator;
 import org.springframework.security.oauth2.client.registration.ClientRegistration;
@@ -40,6 +39,7 @@ import static com.epages.restdocs.apispec.ResourceDocumentation.resource;
 import static org.mockito.Mockito.when;
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.documentationConfiguration;
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.get;
+import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.post;
 import static org.springframework.restdocs.operation.preprocess.Preprocessors.prettyPrint;
 import static org.springframework.restdocs.payload.PayloadDocumentation.*;
 import static org.springframework.restdocs.request.RequestDocumentation.pathParameters;
@@ -209,7 +209,7 @@ public class RestDocOAuth2ControllerTest {
         RequestLoginByCode requestLoginByCode = new RequestLoginByCode("code");
         String requestJson = objectMapper.writeValueAsString(requestLoginByCode);
 
-        mockMvc.perform(RestDocumentationRequestBuilders.post("/oauth2/{registrationId}/login", "registrationId")
+        mockMvc.perform(post("/oauth2/{registrationId}/login", "registrationId")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(requestJson))
                 .andExpect(status().isOk())
@@ -276,7 +276,7 @@ public class RestDocOAuth2ControllerTest {
         RequestLoginByCode requestLoginByCode = new RequestLoginByCode("code");
         String requestJson = objectMapper.writeValueAsString(requestLoginByCode);
 
-        mockMvc.perform(RestDocumentationRequestBuilders.post("/oauth2/{registrationId}/login", "unsupportedRegistrationId")
+        mockMvc.perform(post("/oauth2/{registrationId}/login", "unsupportedRegistrationId")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(requestJson))
                 .andExpect(status().isBadRequest())
@@ -334,7 +334,7 @@ public class RestDocOAuth2ControllerTest {
         RequestLoginByCode requestLoginByCode = new RequestLoginByCode("invalidCode");
         String requestJson = objectMapper.writeValueAsString(requestLoginByCode);
 
-        mockMvc.perform(RestDocumentationRequestBuilders.post("/oauth2/{registrationId}/login", "registrationId")
+        mockMvc.perform(post("/oauth2/{registrationId}/login", "registrationId")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(requestJson))
                 .andExpect(status().isInternalServerError())
