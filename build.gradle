@@ -54,10 +54,13 @@ tasks.named('test') {
     useJUnitPlatform()
 }
 
+def isProd = project.hasProperty('prod')
+
 tasks.named('asciidoctor') {
     inputs.dir snippetsDir
     configurations 'asciidoctorExt'
     dependsOn test
+    onlyIf { !isProd }
 }
 
 tasks.register('copyApiDocument', Copy) {
@@ -67,6 +70,7 @@ tasks.register('copyApiDocument', Copy) {
     }
     from asciidoctor.outputDir
     into file("src/main/resources/static/docs")
+    onlyIf { !isProd }
 }
 
 openapi3 {
@@ -84,6 +88,7 @@ tasks.register('copyOasToSwagger', Copy) {
     }
     from project.layout.buildDirectory.file('api-spec/openapi3.yaml')
     into file("src/main/resources/static/swagger")
+    onlyIf { !isProd }
 }
 
 build {

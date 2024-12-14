@@ -1,8 +1,11 @@
 package com.collectionuiback.infra.config;
 
+import org.springframework.boot.autoconfigure.security.servlet.PathRequest;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Profile;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.config.annotation.web.configuration.WebSecurityCustomizer;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.crypto.keygen.Base64StringKeyGenerator;
 import org.springframework.security.crypto.keygen.StringKeyGenerator;
@@ -32,6 +35,7 @@ public class SecurityConfig {
         );
     }
 
+    @Profile("!prod")
     @Bean
     public WebSecurityCustomizer webSecurityCustomizer() {
         return web -> web.ignoring()
@@ -46,6 +50,7 @@ public class SecurityConfig {
         http
                 .authorizeHttpRequests(authorizationManagerRequestMatcherRegistry -> authorizationManagerRequestMatcherRegistry
                         .requestMatchers("/oauth2/{registrationId}/authorization-uri", "/oauth2/{registrationId}/login").permitAll()
+                        .requestMatchers("/swagger/*", "/docs/*").denyAll()
                         .anyRequest().authenticated()
                 );
 
