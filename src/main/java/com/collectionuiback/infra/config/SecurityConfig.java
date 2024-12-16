@@ -40,7 +40,9 @@ public class SecurityConfig {
     public WebSecurityCustomizer webSecurityCustomizer() {
         return web -> web.ignoring()
                 .requestMatchers(PathRequest.toH2Console())
-                .requestMatchers("/swagger/*")
+                .requestMatchers("/swagger/**")
+                .requestMatchers("/swagger-ui/**")
+                .requestMatchers("/v3/api-docs/**")
                 .requestMatchers("/docs/*")
                 .requestMatchers(PathRequest.toStaticResources().atCommonLocations());
     }
@@ -50,7 +52,7 @@ public class SecurityConfig {
         http
                 .authorizeHttpRequests(authorizationManagerRequestMatcherRegistry -> authorizationManagerRequestMatcherRegistry
                         .requestMatchers("/oauth2/{registrationId}/authorization-uri", "/oauth2/{registrationId}/login").permitAll()
-                        .requestMatchers("/swagger/*", "/docs/*").denyAll()
+                        .requestMatchers("/swagger/**", "/swagger-ui/**", "/v3/api-docs/**", "/docs/*").denyAll()
                         .anyRequest().authenticated()
                 );
 
