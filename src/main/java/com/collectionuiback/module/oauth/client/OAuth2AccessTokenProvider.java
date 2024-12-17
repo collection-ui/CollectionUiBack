@@ -1,6 +1,7 @@
 package com.collectionuiback.module.oauth.client;
 
 import com.collectionuiback.infra.client.RestTemplateResponseClient;
+import com.collectionuiback.module.oauth.exception.OAuth2ClientResponseException;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.*;
 import org.springframework.security.oauth2.client.registration.ClientRegistration;
@@ -9,6 +10,7 @@ import org.springframework.security.oauth2.core.endpoint.OAuth2AccessTokenRespon
 import org.springframework.security.oauth2.core.endpoint.OAuth2ParameterNames;
 import org.springframework.stereotype.Component;
 import org.springframework.util.LinkedMultiValueMap;
+import org.springframework.web.client.RestClientException;
 import org.springframework.web.util.UriComponentsBuilder;
 
 import java.net.URI;
@@ -30,21 +32,30 @@ public class OAuth2AccessTokenProvider {
     }
 
     public OAuth2AccessTokenResponse getAccessToken(String code, ClientRegistration clientRegistration, String redirectUri) {
-        ResponseEntity<OAuth2AccessTokenResponse> response = client.getResponse(() -> {
-            HttpHeaders httpHeaders = createHeaders(clientRegistration);
-
-            LinkedMultiValueMap<String, String> params = createParameters(code, clientRegistration, redirectUri);
-
-            URI uri = UriComponentsBuilder
-                    .fromUriString(clientRegistration.getProviderDetails().getTokenUri())
-                    .build()
-                    .toUri();
-
-            return new RequestEntity<>(params, httpHeaders, HttpMethod.POST, uri);
-        }, OAuth2AccessTokenResponse.class);
+        ResponseEntity<OAuth2AccessTokenResponse> response = getResponse(code, clientRegistration, redirectUri);
 
         OAuth2AccessTokenResponse body = response.getBody();
         return body;
+    }
+
+    private ResponseEntity<OAuth2AccessTokenResponse> getResponse(String code, ClientRegistration clientRegistration, String redirectUri) {
+        try {
+            return client.getResponse(() -> {
+                HttpHeaders httpHeaders = createHeaders(clientRegistration);
+
+                LinkedMultiValueMap<String, String> params = createParameters(code, clientRegistration, redirectUri);
+
+                URI uri = UriComponentsBuilder
+                        .fromUriString(clientRegistration.getProviderDetails().getTokenUri())
+                        .build()
+                        .toUri();
+
+                return new RequestEntity<>(params, httpHeaders, HttpMethod.POST, uri);
+            }, OAuth2AccessTokenResponse.class);
+        }
+        catch (RestClientException e) {
+            throw new OAuth2ClientResponseException("Occurred RestClient Exception when getAccessToken", e);
+        }
     }
 
     private HttpHeaders createHeaders(ClientRegistration clientRegistration) {

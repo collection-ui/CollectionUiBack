@@ -1,13 +1,11 @@
 package com.collectionuiback.infra.client;
 
-import com.collectionuiback.module.oauth.exception.OAuth2ClientResponseException;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.core.convert.converter.Converter;
 import org.springframework.http.RequestEntity;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageConverter;
 import org.springframework.web.client.ResponseErrorHandler;
-import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestOperations;
 import org.springframework.web.client.RestTemplate;
 
@@ -52,20 +50,10 @@ public class RestTemplateResponseClient {
     }
 
     private <T> ResponseEntity<T> getResponseInternal(RequestEntity<?> requestEntity, Class<T> responseType) {
-        try {
-            return restOperations.exchange(requestEntity, responseType);
-        }
-        catch (RestClientException e) {
-            throw new OAuth2ClientResponseException("Occurred when trying to get response", e);
-        }
+        return restOperations.exchange(requestEntity, responseType);
     }
 
     private <T> ResponseEntity<T> getResponseInternal(RequestEntity<?> requestEntity, ParameterizedTypeReference<T> responseType) {
-        try {
-            return restOperations.exchange(requestEntity, responseType);
-        }
-        catch (RestClientException e) {
-            throw new OAuth2ClientResponseException("Occurred when trying to get response", e);
-        }
+        return restOperations.exchange(requestEntity, responseType);
     }
 }
