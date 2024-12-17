@@ -91,6 +91,16 @@ tasks.register('copyOasToSwagger', Copy) {
     onlyIf { !isProd }
 }
 
+tasks.register('copyPropertiesFromSubmodule', Copy) {
+    doFirst {
+        delete fileTree(dir: 'src/main/resources', include: 'application-*.properties')
+    }
+
+    from file('src/main/resources/CollectionUiBackProperties')
+    include 'application-*.properties'
+    into file('src/main/resources')
+}
+
 build {
-    dependsOn copyApiDocument, copyOasToSwagger
+    dependsOn copyApiDocument, copyOasToSwagger, copyPropertiesFromSubmodule
 }

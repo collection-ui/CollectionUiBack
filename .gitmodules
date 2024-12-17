@@ -1,0 +1,3 @@
+[submodule "src/main/resources/CollectionUiBackProperties"]
+	path = src/main/resources/CollectionUiBackProperties
+	url = https://github.com/collection-ui/CollectionUiBackProperties.git/
