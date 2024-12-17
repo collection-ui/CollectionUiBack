@@ -2,7 +2,7 @@ package com.collectionuiback.module.oauth;
 
 import com.collectionuiback.module.account.Account;
 import com.collectionuiback.module.account.AccountService;
-import com.collectionuiback.module.login.LoginService;
+import com.collectionuiback.module.account.login.LoginService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;

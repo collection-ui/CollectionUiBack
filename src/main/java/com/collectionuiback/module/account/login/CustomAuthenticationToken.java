@@ -1,4 +1,4 @@
-package com.collectionuiback.module.login;
+package com.collectionuiback.module.account.login;
 
 import org.springframework.security.authentication.AbstractAuthenticationToken;
 import org.springframework.security.core.userdetails.UserDetails;

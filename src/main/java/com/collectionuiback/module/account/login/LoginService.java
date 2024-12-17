@@ -1,4 +1,4 @@
-package com.collectionuiback.module.login;
+package com.collectionuiback.module.account.login;
 
 import com.collectionuiback.module.account.Account;
 import jakarta.servlet.http.HttpServletRequest;
