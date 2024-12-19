@@ -5,6 +5,7 @@ import com.collectionuiback.module.account.AccountRepository;
 import com.collectionuiback.module.account.AccountRole;
 import com.collectionuiback.module.oauth.ClientRegistrationFactory;
 import com.collectionuiback.module.oauth.OAuth2Attributes;
+import com.collectionuiback.module.oauth.client.OAuth2AccessTokenDto;
 import com.collectionuiback.module.oauth.client.OAuth2AccessTokenProvider;
 import com.collectionuiback.module.oauth.client.OAuth2UserInfoProvider;
 import com.collectionuiback.module.oauth.controller.dto.RequestLoginByCode;
@@ -21,8 +22,6 @@ import org.springframework.security.crypto.keygen.StringKeyGenerator;
 import org.springframework.security.oauth2.client.registration.ClientRegistration;
 import org.springframework.security.oauth2.client.registration.ClientRegistrationRepository;
 import org.springframework.security.oauth2.core.AuthorizationGrantType;
-import org.springframework.security.oauth2.core.OAuth2AccessToken;
-import org.springframework.security.oauth2.core.endpoint.OAuth2AccessTokenResponse;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -113,8 +112,7 @@ class OAuth2ControllerTest {
         // given
         ClientRegistration clientRegistration = clientRegistrationRepository.findByRegistrationId("registrationId");
         when(oAuth2AccessTokenProvider.getAccessToken("code", clientRegistration))
-                .thenReturn(OAuth2AccessTokenResponse.withToken("accessTokenValue")
-                        .tokenType(OAuth2AccessToken.TokenType.BEARER).build());
+                .thenReturn(OAuth2AccessTokenDto.builder().accessToken("accessTokenValue").build());
 
         when(oAuth2UserInfoProvider.getUserInfo("accessTokenValue", clientRegistration))
                 .thenReturn(new OAuth2Attributes(Map.of(
@@ -145,8 +143,7 @@ class OAuth2ControllerTest {
         // given
         ClientRegistration clientRegistration = clientRegistrationRepository.findByRegistrationId("registrationId");
         when(oAuth2AccessTokenProvider.getAccessToken("code", clientRegistration))
-                .thenReturn(OAuth2AccessTokenResponse.withToken("accessTokenValue")
-                        .tokenType(OAuth2AccessToken.TokenType.BEARER).build());
+                .thenReturn(OAuth2AccessTokenDto.builder().accessToken("accessTokenValue").build());
 
         when(oAuth2UserInfoProvider.getUserInfo("accessTokenValue", clientRegistration))
                 .thenReturn(new OAuth2Attributes(Map.of(
@@ -195,8 +192,7 @@ class OAuth2ControllerTest {
 
         ClientRegistration clientRegistration = clientRegistrationRepository.findByRegistrationId("registrationId");
         when(oAuth2AccessTokenProvider.getAccessToken("code", clientRegistration))
-                .thenReturn(OAuth2AccessTokenResponse.withToken("accessTokenValue")
-                        .tokenType(OAuth2AccessToken.TokenType.BEARER).build());
+                .thenReturn(OAuth2AccessTokenDto.builder().accessToken("accessTokenValue").build());
 
         when(oAuth2UserInfoProvider.getUserInfo("accessTokenValue", clientRegistration))
                 .thenReturn(new OAuth2Attributes(Map.of(

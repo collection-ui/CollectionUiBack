@@ -1,19 +1,19 @@
-package com.collectionuiback.infra.client;
+package com.collectionuiback.module.oauth.client;
 
+import com.collectionuiback.module.oauth.exception.OAuth2ClientResponseException;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.core.convert.converter.Converter;
 import org.springframework.http.RequestEntity;
 import org.springframework.http.ResponseEntity;
-import org.springframework.http.converter.HttpMessageConverter;
-import org.springframework.web.client.ResponseErrorHandler;
+import org.springframework.stereotype.Component;
+import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestOperations;
-import org.springframework.web.client.RestTemplate;
 
-import java.util.Arrays;
 import java.util.Map;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
+@Component
 public class RestTemplateResponseClient {
 
     private final RestOperations restOperations;
@@ -22,18 +22,6 @@ public class RestTemplateResponseClient {
 
     public RestTemplateResponseClient(RestOperations restOperations) {
         this.restOperations = restOperations;
-    }
-
-    public RestTemplateResponseClient(ResponseErrorHandler errorHandler, HttpMessageConverter<?> ...messageConverter) {
-        RestTemplate restTemplate = new RestTemplate(Arrays.stream(messageConverter).toList());
-        restTemplate.setErrorHandler(errorHandler);
-        this.restOperations = restTemplate;
-    }
-
-    public RestTemplateResponseClient(ResponseErrorHandler errorHandler) {
-        RestTemplate restTemplate = new RestTemplate();
-        restTemplate.setErrorHandler(errorHandler);
-        this.restOperations = restTemplate;
     }
 
     public <T, U> ResponseEntity<U> getResponse(T request, Converter<T, RequestEntity<?>> converter, Class<U> responseType) {
@@ -49,11 +37,26 @@ public class RestTemplateResponseClient {
         return resultMapper.apply(responseEntity.getBody());
     }
 
+    public Map<String, Object> getResponseBody(Supplier<RequestEntity<?>> requestSupplier) {
+        ResponseEntity<Map<String, Object>> responseEntity = getResponseInternal(requestSupplier.get(), PARAMETERIZED_RESPONSE_TYPE);
+        return responseEntity.getBody();
+    }
+
     private <T> ResponseEntity<T> getResponseInternal(RequestEntity<?> requestEntity, Class<T> responseType) {
-        return restOperations.exchange(requestEntity, responseType);
+        try {
+            return restOperations.exchange(requestEntity, responseType);
+        }
+        catch (RestClientException e) {
+            throw new OAuth2ClientResponseException("Occurred when trying to get response", e);
+        }
     }
 
     private <T> ResponseEntity<T> getResponseInternal(RequestEntity<?> requestEntity, ParameterizedTypeReference<T> responseType) {
-        return restOperations.exchange(requestEntity, responseType);
+        try {
+            return restOperations.exchange(requestEntity, responseType);
+        }
+        catch (RestClientException e) {
+            throw new OAuth2ClientResponseException("Occurred when trying to get response", e);
+        }
     }
 }

@@ -1,11 +1,11 @@
 package com.collectionuiback.module.oauth.client;
 
-import com.collectionuiback.infra.client.RestTemplateResponseClient;
 import com.collectionuiback.module.oauth.ClientRegistrationFactory;
 import com.collectionuiback.module.oauth.OAuth2Attributes;
 import com.collectionuiback.module.oauth.exception.OAuth2ClientResponseException;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,7 +13,6 @@ import org.springframework.boot.test.autoconfigure.web.client.RestClientTest;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
-import org.springframework.security.oauth2.client.http.OAuth2ErrorResponseErrorHandler;
 import org.springframework.security.oauth2.client.registration.ClientRegistration;
 import org.springframework.security.oauth2.core.endpoint.OAuth2ParameterNames;
 import org.springframework.security.oauth2.core.oidc.IdTokenClaimNames;
@@ -32,18 +31,26 @@ import static org.springframework.test.web.client.response.MockRestResponseCreat
 @RestClientTest
 class OAuth2UserInfoProviderTest {
 
+    static OAuth2UserInfoProvider oAuth2UserInfoProvider;
+    static RestTemplate restTemplate;
+
     @Autowired
     ObjectMapper objectMapper;
+
+    @BeforeAll
+    static void setUp() {
+        restTemplate = new RestTemplate();
+        restTemplate.setErrorHandler(new CustomOAuth2ErrorResponseErrorHandler());
+
+        RestTemplateResponseClient restTemplateResponseClient = new RestTemplateResponseClient(restTemplate);
+        oAuth2UserInfoProvider = new OAuth2UserInfoProvider(restTemplateResponseClient);
+    }
 
     @DisplayName("UserInfo 경로로 AccessToken 을 담아 요청하면 User 정보를 반환받는다. UserInfoAuthenticationMethod 가 Header 인 경우 Get 으로 요청을 전송한다.")
     @Test
     void requestUserInfoEndpointWithAccessToken() throws JsonProcessingException {
         // given
-        RestTemplate restTemplate = new RestTemplate();
         MockRestServiceServer server = MockRestServiceServer.bindTo(restTemplate).build();
-
-        RestTemplateResponseClient restTemplateResponseClient = new RestTemplateResponseClient(restTemplate);
-        OAuth2UserInfoProvider oAuth2UserInfoProvider = new OAuth2UserInfoProvider(restTemplateResponseClient);
         ClientRegistration clientRegistration = ClientRegistrationFactory.createClientRegistration("clientRegistration");
 
         // when
@@ -74,11 +81,7 @@ class OAuth2UserInfoProviderTest {
     @Test
     void requestUserInfoEndpointWithAccessTokenWithFormAuthenticationMethod() throws JsonProcessingException {
         // given
-        RestTemplate restTemplate = new RestTemplate();
         MockRestServiceServer server = MockRestServiceServer.bindTo(restTemplate).build();
-
-        RestTemplateResponseClient restTemplateResponseClient = new RestTemplateResponseClient(restTemplate);
-        OAuth2UserInfoProvider oAuth2UserInfoProvider = new OAuth2UserInfoProvider(restTemplateResponseClient);
         ClientRegistration clientRegistration = ClientRegistrationFactory.createClientRegistrationWithFormUserInfoAuthenticationMethod("clientRegistration");
 
         // when
@@ -110,21 +113,8 @@ class OAuth2UserInfoProviderTest {
     @Test
     void notFoundExceptionOnAccessTokenProviderTest() throws JsonProcessingException {
         // given
-        RestTemplate restTemplate = new RestTemplate();
-        restTemplate.setErrorHandler(new OAuth2ErrorResponseErrorHandler());
         MockRestServiceServer server = MockRestServiceServer.bindTo(restTemplate).build();
-
-        RestTemplateResponseClient restTemplateResponseClient = new RestTemplateResponseClient(restTemplate);
-        OAuth2UserInfoProvider oAuth2UserInfoProvider = new OAuth2UserInfoProvider(restTemplateResponseClient);
         ClientRegistration clientRegistration = ClientRegistrationFactory.createClientRegistration("clientRegistration");
-
-        // when
-        Map<String, String> responseMap = Map.of(
-                "name", "nameValue",
-                "email", "email@email.com",
-                "picture", "pictureValue"
-        );
-        String responseJson = objectMapper.writeValueAsString(responseMap);
 
         server
                 .expect(requestTo(clientRegistration.getProviderDetails().getUserInfoEndpoint().getUri()))
@@ -141,21 +131,8 @@ class OAuth2UserInfoProviderTest {
     @Test
     void serverErrorOnAccessTokenProviderTest() throws JsonProcessingException {
         // given
-        RestTemplate restTemplate = new RestTemplate();
-        restTemplate.setErrorHandler(new OAuth2ErrorResponseErrorHandler());
         MockRestServiceServer server = MockRestServiceServer.bindTo(restTemplate).build();
-
-        RestTemplateResponseClient restTemplateResponseClient = new RestTemplateResponseClient(restTemplate);
-        OAuth2UserInfoProvider oAuth2UserInfoProvider = new OAuth2UserInfoProvider(restTemplateResponseClient);
         ClientRegistration clientRegistration = ClientRegistrationFactory.createClientRegistration("clientRegistration");
-
-        // when
-        Map<String, String> responseMap = Map.of(
-                "name", "nameValue",
-                "email", "email@email.com",
-                "picture", "pictureValue"
-        );
-        String responseJson = objectMapper.writeValueAsString(responseMap);
 
         server
                 .expect(requestTo(clientRegistration.getProviderDetails().getUserInfoEndpoint().getUri()))

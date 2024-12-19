@@ -1,4 +1,4 @@
-package com.collectionuiback.module.oauth.errorhandler;
+package com.collectionuiback.module.oauth.client;
 
 import com.collectionuiback.module.oauth.exception.OAuth2ClientResponseException;
 import org.springframework.http.client.ClientHttpResponse;
